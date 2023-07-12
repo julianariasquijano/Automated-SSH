@@ -1,0 +1,159 @@
+# This is an example configuration for the automated_ssh process.
+#
+# The purpose of this configuration file is to define which characters are going to be sent over the ssh connection
+# and under which circumstances.
+#
+# Configuration components:
+#
+# - initialCommands: This list defines which characters will be queued for transmission 
+#   once the ssh connection is established.
+#
+#   In other words: execute which commands or send which key strokes when the connection is established.
+#
+# - expectedTextsDictionary: This dictionary holds character sequences (expected texts) which enclose a list of 
+#   characters will be queued for transmission once the "expected text" is identified in the incoming ssh stream.
+#
+#   In other words: execute which commands or send which key strokes when an incoming specific text is detected.
+#
+# - expectedTextListAdditions: This dictionary holds pre existent expectedTextsDictionary entries which enclose a list of
+#   "custom commands lists" which has to be appended to the expectedTextsDictionary entry list of commands.
+#
+#   In other words: Allows adding new commands or key strokes to a predefined expected text list definition.
+#   
+#   This helps for reusing commands lists between different expected texts. For example:
+#   reusableCommandListExample is a custom list which enclosed commands will be queued for transmission
+#   after the specific commands for the expected text "Last login" are executed.
+#
+#
+# automated_ssh control instructions:
+#
+#   These are instructions that make special operations on the behavior of the automated process
+#   and are treated as if they were commands to be sent but they are not send really.
+#
+#   They are defined this way: _as_control=<_as_control command>:<_as_control command parameter data>
+#   Example: _as_control=set-between-new-command-seconds:3
+#   
+#   List of available as control commands:
+#
+#   - set-between-new-command-seconds : Wait the defined seconds before sending each queued line of
+#     characters (command) to the ssh server. This time is set globally for all the queued commands.
+#     Example:
+#       _as_control=set-between-new-command-seconds:3
+#
+#   - set-exit-code : Sets the exit code that will be reported by the program to the shell when it finishes.
+#     The new exit code will be set only if it is greater than the actual one or if it is lower than zero.
+#     Example:
+#       _as_control=set-exit-code:3
+#
+#     If the exit code ends being lower than zero, the reported exit code will be 1.
+#
+#     This behavior should match the gravity of the error found. The grater the gravity of the error found,
+#     the grater the value of the exit code.
+#
+#   - remove_expected_text: removes an entry in the expectedTextsDictionary. This should be made to avoid
+#     unwanted loops once an expected text is found and it should be processed no more times.
+#     Example:
+#       _as_control=remove_expected_text:user
+#
+#       this works if there is a "user" expected text defined like this:
+#            expectedTextsDictionary:
+#
+#              "user":
+#                - "pablo\n"
+#
+#
+#   - execute_expected_text_commands : executes the commands list of the specified expected as if it was 
+#     detected in the incoming stream; but a condition must be met
+#     Example:
+#       _as_control=execute_expected_text_commands:Last login_condition_int(localDataDict['exit-code']) < 0
+#
+#       Explanation:
+#         - "Last login" is the configured expected text
+#         - "_condition_" is always there to separate the expected text and the condition 
+#         - "int(localDataDict['exit-code']) < 0" is the True/False python code condition that will be evaluated
+#    
+#
+#   - clear-commands-queue : clears the actual commands queue to be sent, erasing ALL previous queued commands.
+#     Please note that although it does not require parameters, the two points at the end are required.
+#     Example:
+#       _as_control=clear-commands-queue:
+#
+#
+#
+
+
+#Each entry in the initialCommands list, will be queued for execution once the ssh connection is established
+initialCommands:
+  #- "sudo adduser new_test_user \n"
+  #- "sudo iptraf-ng \n"
+  #- "{{dynamic_value_taken_from_map_argument}}"
+
+
+#Custom commands list
+reusableCommandListExample:
+  - "git\n"
+  - "exit\n"
+
+
+expectedTextsDictionary:
+    
+  ####### general examples:
+
+  "[sudo] password":
+    - "somepassword\n"
+
+  "Last login": 
+    - "ls\n"
+    #Automated SSH control
+    #- "_as_control=set-between-new-command-seconds:0",
+    #- "_as_control=set-exit-code:40",
+    #- "_as_control=remove_expected_text:user",
+    #- "_as_control=execute_expected_text_commands:Last login_condition_int(localDataDict['exit-code']) < 0"
+    #- "_as_control=clear-commands-queue:"    
+    - "_as_control=execute_expected_text_commands:_group_exit_condition_True"
+
+  ####### example: adduser control
+    
+  "Enter new UNIX password": 
+    - "\n"
+
+  "Retype new UNIX password":
+    - "\n"
+
+  "Full Name": 
+    - "\n"
+
+  "Room Number": 
+    - "\n"
+
+  "Work Phone": 
+    - "\n"
+
+  "Home Phone": 
+    - "\n"
+
+  "Other": 
+    - "\n"
+
+  "information correct": 
+    - "y\n"
+    - "logout\n"
+
+    
+  ####### example: iptraf-ng control    
+
+  "traffic information": 
+    - "b \n"
+    - "s \n"
+
+    
+  #Groups does NOT evaluate _as_control commands
+  "_group_exit":
+    - "get\n"
+    - "exit\n"
+  
+# Commands list Reuse Section. _as_control commands ARE evaluated
+expectedTextListAdditions:
+  
+  "Last login":
+    - reusableCommandListExample
