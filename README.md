@@ -1,4 +1,13 @@
 [![LGPL License](https://img.shields.io/badge/license-LGPL-blue.svg)](https://github.com/paramiko/paramiko/blob/main/LICENSE)
+
+```
+ _______ _     _ _______ _______     ______ ______ _     _
+(_______|_)   (_|_______|_______)   / _____) _____|_)   (_)
+ _______ _     _    _    _     _   ( (____( (____  _______
+|  ___  | |   | |  | |  | |   | |   \____ \\____ \|  ___  |
+| |   | | |___| |  | |  | |___| |   _____) )____) ) |   | |
+|_|   |_|\_____/   |_|   \_____/   (______(______/|_|   |_|
+```
 # Automated SSH
 
 Automated SSH is a solution written in python that allows the automation of interactive operations made through a console ssh connection.
