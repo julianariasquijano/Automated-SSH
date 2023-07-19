@@ -1,7 +1,7 @@
 [![LGPL License](https://img.shields.io/badge/license-LGPL-blue.svg)](https://github.com/paramiko/paramiko/blob/main/LICENSE)
 # Automated SSH
 
-Automated SSH is a solution written in python to allow automation of interactive operations made through a console ssh connection.
+Automated SSH is a solution written in python that allows the automation of interactive operations made through a console ssh connection.
 
 This tool can be used in DevOps CI/CD pipelines which require console interactive operations and take out the human intervention. It is also useful if you want to build some functional tests against text based programs.
 
